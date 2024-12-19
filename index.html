@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator DSR dan DIR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('./kalkulator.png') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border: 1px solid #d4edda;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .result p {
+            margin: 0 0 10px;
+            font-size: 16px;
+            color: #155724;
+        }
+        .result span {
+            font-weight: bold;
+        }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            font-size: 14px;
+            font-family: 'Arial', sans-serif;
+        }
+        footer strong {
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Kalkulator DSR dan DIR</h2>
+        <div class="form-group">
+            <label for="pendapatan">Pendapatan (Rp)</label>
+            <input type="text" id="pendapatan" placeholder="Masukkan pendapatan" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="joinIncome">Join Income (Rp)</label>
+            <input type="text" id="joinIncome" placeholder="Masukkan join income" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="pendapatanLain">Pendapatan Lain-Lain (Rp)</label>
+            <input type="text" id="pendapatanLain" placeholder="Masukkan pendapatan lain-lain" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="biayaHidup">Biaya Hidup (Rp)</label>
+            <input type="text" id="biayaHidup" placeholder="Masukkan biaya hidup" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="angsuran1">Angsuran 1 (Rp)</label>
+            <input type="text" id="angsuran1" placeholder="Masukkan angsuran 1" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="angsuran2">Angsuran 2 (Rp)</label>
+            <input type="text" id="angsuran2" placeholder="Masukkan angsuran 2" oninput="formatAndCalculate(this)">
+        </div>
+        <div class="form-group">
+            <label for="angsuran3">Angsuran 3 (Rp)</label>
+            <input type="text" id="angsuran3" placeholder="Masukkan angsuran 3" oninput="formatAndCalculate(this)">
+        </div>
+
+        <div class="result" id="result">
+            <p>DSR: <span id="dsr">-</span>%</p>
+            <p>DIR: <span id="dir">-</span>%</p>
+        </div>
+    </div>
+
+    <footer>
+        Dibuat oleh <strong>@Bendi.nr</strong>
+    </footer>
+
+    <script>
+        function parseNumber(value) {
+            return parseFloat(value.replace(/\./g, '').replace(/,/g, '')) || 0;
+        }
+
+        function formatNumber(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function formatAndCalculate(input) {
+            const cursorPosition = input.selectionStart;
+            const rawValue = input.value.replace(/\./g, '').replace(/,/g, '');
+            const formattedValue = formatNumber(rawValue);
+            input.value = formattedValue;
+            input.setSelectionRange(cursorPosition, cursorPosition);
+
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            const pendapatan = parseNumber(document.getElementById('pendapatan').value);
+            const joinIncome = parseNumber(document.getElementById('joinIncome').value);
+            const pendapatanLain = parseNumber(document.getElementById('pendapatanLain').value);
+            const biayaHidup = parseNumber(document.getElementById('biayaHidup').value);
+            const angsuran1 = parseNumber(document.getElementById('angsuran1').value);
+            const angsuran2 = parseNumber(document.getElementById('angsuran2').value);
+            const angsuran3 = parseNumber(document.getElementById('angsuran3').value);
+
+            const totalPendapatan = pendapatan + joinIncome + pendapatanLain;
+            const totalAngsuran = angsuran1 + angsuran2 + angsuran3;
+
+            // Hitung DSR
+            const dsr = totalPendapatan > 0 ? (totalAngsuran / totalPendapatan) * 100 : 0;
+
+            // Hitung DIR
+            const dir = (totalPendapatan - biayaHidup) > 0 ? (totalAngsuran / (totalPendapatan - biayaHidup)) * 100 : 0;
+
+            // Tampilkan hasil
+            document.getElementById('dsr').textContent = dsr.toFixed(2);
+            document.getElementById('dir').textContent = dir.toFixed(2);
+        }
+    </script>
+</body>
+</html>
